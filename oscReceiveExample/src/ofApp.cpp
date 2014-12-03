@@ -237,8 +237,8 @@ void ofApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y){
-    cp[editControlPoint] = (float)x / ofGetWindowWidth() / 4;
-    cp[(editControlPoint + 1) % cp.size()] = (float)y / ofGetWindowHeight() / 4;
+    //cp[editControlPoint] = (float)x / ofGetWindowWidth() / 4;
+    cp[editControlPoint] = (float)y / ofGetWindowHeight() * 4;
 }
 
 //--------------------------------------------------------------
