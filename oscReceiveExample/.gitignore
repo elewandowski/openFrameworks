@@ -1,5 +1,5 @@
-/obj/
-/bin/
+/obj/*
+/bin/*
 oscReceiveExample.depend
 oscReceiveExample.layout
 oscReceiveExample.layout.save
