@@ -32,7 +32,7 @@ class ofApp : public ofBaseApp {
 		int current_msg_string;
 		string msg_strings[NUM_MSG_STRINGS];
 		float timers[NUM_MSG_STRINGS];
-		array<float, 17> cp;
+		array<float, 8> cp;
 		int editControlPoint;
 
         array<int, 9> ccArray;

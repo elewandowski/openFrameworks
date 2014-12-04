@@ -4,7 +4,9 @@
 class Keys {
 
     public:
+
         static const int LENGTH = 128;
+        static const int BUFFER_SIZE = 512;
         array<int, LENGTH> keys;
         array<int, LENGTH> keysWithPedal;
         array<int, LENGTH> keysWithPedalAndDecay;
@@ -14,6 +16,10 @@ class Keys {
         int PRESSED_KEYS = 0;
         string NAME;
 
+        array<float, BUFFER_SIZE> audioL;
+        array<float, BUFFER_SIZE> audioR;
+        int bufferWriteHead, bufferReadHead;
+
         Keys();
         Keys(string name);
         int getVel(int pitch);
@@ -21,6 +27,11 @@ class Keys {
         void setVel(int pitch, int velocity);
         void setPedal(bool state);
         int numOfPressedKeys();
+        void setAudio(float audioInL, float audioInR);
+        float getAudioMono();
+        float getBuffer(int i);
+        void setAudioBufferIndex(int index, float value);
+        array<float, 2> getAudioStereo();
 
     private:
         int pedal(int currentVelocity, int newVelocity);

@@ -4,14 +4,14 @@
 void ofApp::setup(){
 	// listen on the given port
 
-	ofSetBackgroundAuto(false);
+	//ofSetBackgroundAuto(false);
 	ofBackground(127);
 	ofEnableAlphaBlending();
-	cout << "listening for osc messages on port " << PORT << "\n";
+	//cout << "listening for osc messages on port " << PORT << "\n";
 	receiver.setup(PORT);
 
 	editControlPoint = 0;
-    for(int i=0; i<cp.size(); i++) cp[i] = 1;
+    for(int i=0; i<cp.size(); i++) cp[i] = 1.0;
 
 	instArray[0] = Keys("debussy");
 	instArray[1] = Keys("pipe");
@@ -55,6 +55,12 @@ void ofApp::update(){
                         int velocity = m.getArgAsInt32(1);
                         if (velocity > 0) increaseLineLength();
                         instArray[i].setVel(pitch, velocity);
+                    }
+                    else if (messageAddress[1] == "audio") {
+                        instArray[i].setAudio(m.getArgAsFloat(0), m.getArgAsFloat(0));
+                    }
+                    else if (messageAddress[1] == "audioBuffer") {
+                        for(int j=0; j<Keys::BUFFER_SIZE; j++) instArray[i].setAudioBufferIndex(j, m.getArgAsFloat(j));
                     }
                     else if (messageAddress[1] == "pedal"){
                         bool pedal = m.getArgAsInt32(0) > 0 ? true : false;
@@ -100,9 +106,6 @@ void ofApp::update(){
 			msg_strings[current_msg_string] = "";
 		}
 	}
-
-
-
     lineStart = lineStartBase + (sin(lineStartTheta) * lineMult);
     lineEnd = lineEndBase + (sin(lineEndTheta) * lineMult);
 }
@@ -120,26 +123,34 @@ void ofApp::draw(){
 	buf = "listening for osc messages on port " + ofToString(PORT);
 	ofDrawBitmapString(buf, 10, 20);
 
-	for(int i = 0; i < NUM_MSG_STRINGS; i++){
-		//ofDrawBitmapString(msg_strings[i], 10, 40 + 15 * i);
-	}
+//	for(int i = 0; i < NUM_MSG_STRINGS; i++){
+//		//ofDrawBitmapString(msg_strings[i], 10, 40 + 15 * i);
+//	}
 
 
     float verticalSpacing = ofGetWindowHeight() / Keys::LENGTH;
 
+
+
     for (int pitch=0; pitch<Keys::LENGTH; pitch++) {
         for (int i=0; i<instArray.size(); i++) {
             int velocity = instArray[i].getVelWithDecay(pitch);
+            float audio = instArray[i].getAudioMono();
+
             if(i == 0) {
                 if (velocity > 0) {
                     ofColor color;
                     color.setHsb(pitch, 127, velocity, 50);
-                    ofSetColor(color * cp[16]);
+                    ofSetColor(color);
                     ofFill();
-                    //strokeWeight(velocity * STROKE_WEIGHT * 0.5);
-                    glLineWidth(1 + (velocity*10));
+                    glLineWidth(1 + (velocity*instArray[3].getAudioMono()));
                     //float velTriggeredAngle = (velocity / 127) * 50;
-                    ofLine(lineStart * cp[12], pitch * verticalSpacing * cp[13], lineEnd + cp[14], pitch * verticalSpacing + cp[15]);
+                    ofLine(lineStart * cp[0], pitch * verticalSpacing * cp[1], lineEnd + cp[2], pitch * verticalSpacing + cp[3]);
+
+                    ofNoFill();
+                    glLineWidth(1);
+                    ofSetColor(0);
+                    ofLine(lineStart * cp[0], pitch * verticalSpacing * cp[1], lineEnd + cp[2], pitch * verticalSpacing + cp[3]);
                 }
             }
             else if(i == 1) {
@@ -155,7 +166,7 @@ void ofApp::draw(){
                     color.setHsb(pitch + 30, 127, 100, 50);
                     ofSetColor(color);
                     ofNoFill();
-                    glLineWidth(4*cp[11]);
+                    glLineWidth(4*cp[2]);
                     //for(int vertex=0; vertex<instArray[i].PRESSED_KEYS; vertex++) {
                 if(velocity > 0) {
 //                    float mag = pitch / Keys::LENGTH;
@@ -166,7 +177,7 @@ void ofApp::draw(){
 //                    ofLine(v3.x, v3.y, v4.x, v4.y);
 //                    cout << "x-axis:" << pitch << endl;
 //                    cout << "y-axis:" << pitch << endl;
-                    ofCircle(ofGetWindowWidth()/4*cp[9], ofGetWindowHeight()/4, pitch * 4 + velocity * cp[10]);
+                    ofCircle(ofGetWindowWidth()/4*cp[2], ofGetWindowHeight()/4, pitch * 4 + velocity * cp[2]);
                 }
             }
             else if(i == 2) {
@@ -188,7 +199,7 @@ void ofApp::draw(){
                         ofFill();
                         glLineWidth(20);
                         int pitch2Radius = ofMap(pitch, 35, 44, 50, 200);
-                        ofCircle(ofGetWindowWidth()/2*cp[5], ofGetWindowHeight()/2, pitch2Radius*cp[8]);
+                        ofCircle(ofGetWindowWidth()/2*cp[5], ofGetWindowHeight()/2, pitch2Radius*cp[7]);
                     }
                     else if (pitch == 41){ //clap
                         color.setHsb(pitch2Col*cp[0], 127, 100, 50);
@@ -205,17 +216,38 @@ void ofApp::draw(){
                         glLineWidth(20);
                         ofCircle(ofGetWindowWidth()/4*3*cp[0], ofGetWindowHeight()/3*cp[1], 100);
                     }
-                    //for(int vertex=0; vertex<instArray[i].PRESSED_KEYS; vertex++) {
-
                 }
+            }
+            else if(i == 3) {
+                //cout << "audio is: " << audio << endl;
+                ofColor color;
+                color.setHsb(audio*100, 127, 100, 50);
+                ofSetColor(color);
+                ofFill();
+
+                //glLineWidth(20);
+                //ofCircle(ofGetWindowWidth()/2, ofGetWindowHeight()/2, 250*audio*cp[4]);
+                ofNoFill();
+                ofSetColor(0);
+                ofCircle(ofGetWindowWidth()/2, ofGetWindowHeight()/2, 250*audio*cp[4]);
             }
         }
     }
 
-//    ofCircle(ofGetWindowWidth()/2, ofGetWindowHeight()/2, 100);
+    float verticalSpacingAudio = ofGetWindowHeight() / (float) Keys::BUFFER_SIZE;
 
-    //if (instArray[1].numOfPressedKeys() > 0) cout << endl << endl;
-    //ofEndShape();
+    for (int bufferPos=0; bufferPos<Keys::BUFFER_SIZE; bufferPos++) {
+        ofFill();
+        glLineWidth(verticalSpacingAudio);
+        //ofSetColor(255);
+        float audio = instArray[3].getBuffer(bufferPos);
+        if (audio > 0) ofSetColor(0);
+        else ofSetColor(255);
+        ofLine(0, verticalSpacingAudio * bufferPos, ofGetWindowWidth(), verticalSpacingAudio * bufferPos);
+        //cout << "audio is: " << audio << endl;
+//        cout << "buff size  is: " << Keys::BUFFER_SIZE << endl;
+//        cout << "VERTICAL SPACEING: " << verticalSpacingAudio << endl;
+    }
 }
 
 void ofApp::increaseLineLength(){
@@ -225,9 +257,6 @@ void ofApp::increaseLineLength(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    if (key == ' ') {
-        editControlPoint = (editControlPoint + 1) % cp.size();
-    }
 }
 
 //--------------------------------------------------------------
@@ -237,8 +266,7 @@ void ofApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y){
-    //cp[editControlPoint] = (float)x / ofGetWindowWidth() / 4;
-    cp[editControlPoint] = (float)y / ofGetWindowHeight() * 4;
+    cp[editControlPoint] = (float)x / ofGetWindowWidth() * 4;
 }
 
 //--------------------------------------------------------------
@@ -248,6 +276,8 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
+    //for my mouse: left = 0, right = 2
+    if (button == 0) editControlPoint = (editControlPoint + 1) % cp.size();
 }
 
 //--------------------------------------------------------------

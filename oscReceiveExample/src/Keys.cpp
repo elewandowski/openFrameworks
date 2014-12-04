@@ -6,6 +6,7 @@ Keys::Keys() {
       keysWithPedal[i] = 0;
       keysWithPedalAndDecay[i] = 0;
     }
+    bufferReadHead, bufferWriteHead = 0;
 }
 
 Keys::Keys(string _name) {
@@ -15,6 +16,7 @@ Keys::Keys(string _name) {
       keysWithPedal[i] = 0;
       keysWithPedalAndDecay[i] = 0;
     }
+    bufferReadHead, bufferWriteHead = 0;
 }
 
 int Keys::getVel(int pitch) {
@@ -73,4 +75,37 @@ int Keys::numOfPressedKeys() {
         if (keysWithPedal[i] > 0) PRESSED_KEYS++;
     }
     return PRESSED_KEYS;
+}
+
+void Keys::setAudio(float audioInL, float audioInR) {
+    //cout << "the audio in here is: " << audioIn << endl;
+    audioL[bufferWriteHead] = audioInL;
+    audioR[bufferWriteHead] = audioInR;
+    bufferWriteHead = (bufferWriteHead + 1) % BUFFER_SIZE;
+}
+
+float Keys::getAudioMono() {
+    //cout << "the audio out here is: " << audioL[0] << endl;
+    float output = (audioL[(bufferWriteHead-1)%BUFFER_SIZE] + audioR[(bufferWriteHead-1)%BUFFER_SIZE]) * 0.5;
+    //bufferReadHead = (bufferReadHead + 1) % BUFFER_SIZE;
+    return output;
+}
+
+void Keys::setAudioBufferIndex(int index, float value) {
+    audioL[index] = value;
+    audioR[index] = value;
+}
+
+float Keys::getBuffer(int i) {
+    //cout << "the audio out here is: " << audioL[0] << endl;
+    float output = (audioL[i] + audioR[i]) * 0.5;
+    //bufferReadHead = (bufferReadHead + 1) % BUFFER_SIZE;
+    return output;
+}
+
+array<float, 2> Keys::getAudioStereo() {
+    //cout << "the audio out here is: " << audioL[0] << endl;
+    array<float, 2> output = {audioL[bufferReadHead], audioR[bufferReadHead]};
+    bufferReadHead = (bufferReadHead + 1) % BUFFER_SIZE;
+    return output;
 }
