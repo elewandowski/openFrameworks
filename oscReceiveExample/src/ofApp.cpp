@@ -60,6 +60,7 @@ void ofApp::update(){
                         instArray[i].setAudio(m.getArgAsFloat(0), m.getArgAsFloat(0));
                     }
                     else if (messageAddress[1] == "audioBuffer") {
+                        //cout << "num of args is " << m.getNumArgs() << endl;
                         for(int j=0; j<Keys::BUFFER_SIZE; j++) instArray[i].setAudioBufferIndex(j, m.getArgAsFloat(j));
                     }
                     else if (messageAddress[1] == "pedal"){
@@ -241,8 +242,10 @@ void ofApp::draw(){
         glLineWidth(verticalSpacingAudio);
         //ofSetColor(255);
         float audio = instArray[3].getBuffer(bufferPos);
-        if (audio > 0) ofSetColor(0);
-        else ofSetColor(255);
+//        if (audio > 0) ofSetColor(0);
+//        else ofSetColor(255);
+        float audioColor = (audio + 1) * 0.5;
+        ofSetColor(audioColor * 255);
         ofLine(0, verticalSpacingAudio * bufferPos, ofGetWindowWidth(), verticalSpacingAudio * bufferPos);
         //cout << "audio is: " << audio << endl;
 //        cout << "buff size  is: " << Keys::BUFFER_SIZE << endl;
