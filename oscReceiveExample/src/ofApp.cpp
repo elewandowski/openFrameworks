@@ -236,17 +236,21 @@ void ofApp::draw(){
     }
 
     float verticalSpacingAudio = ofGetWindowHeight() / (float) Keys::BUFFER_SIZE;
+    glLineWidth(5);
 
     for (int bufferPos=0; bufferPos<Keys::BUFFER_SIZE; bufferPos++) {
-        ofFill();
-        glLineWidth(verticalSpacingAudio);
+        //ofFill();
+
         //ofSetColor(255);
         float audio = instArray[3].getBuffer(bufferPos);
+        //if(audio > 1 || audio < -1) cout << "audio is: " << audio << endl;
 //        if (audio > 0) ofSetColor(0);
 //        else ofSetColor(255);
         float audioColor = (audio + 1) * 0.5;
+
+
         ofSetColor(audioColor * 255);
-        ofLine(0, verticalSpacingAudio * bufferPos, ofGetWindowWidth(), verticalSpacingAudio * bufferPos);
+        ofLine(0, verticalSpacingAudio * bufferPos, ofGetWindowWidth()/2, verticalSpacingAudio * bufferPos);
         //cout << "audio is: " << audio << endl;
 //        cout << "buff size  is: " << Keys::BUFFER_SIZE << endl;
 //        cout << "VERTICAL SPACEING: " << verticalSpacingAudio << endl;

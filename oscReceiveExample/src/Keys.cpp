@@ -92,6 +92,7 @@ float Keys::getAudioMono() {
 }
 
 void Keys::setAudioBufferIndex(int index, float value) {
+    //TODO add limiting on input
     audioL[index] = value;
     audioR[index] = value;
 }
