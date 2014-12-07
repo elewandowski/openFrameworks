@@ -20,8 +20,6 @@ void ofApp::setup(){
 	instArray[1] = Keys("pipe");
 
 	current_msg_string = 0;
-	ofBackground(30, 30, 130);
-	ofBackground(215);
 
     lineStartBase = ofGetWindowWidth() / 3;
     lineEndBase = ofGetWindowWidth() / 3 * 2;
@@ -240,13 +238,16 @@ void ofApp::draw(){
     }
 
     float verticalSpacingAudio = ofGetWindowHeight() / (float) Keys::BUFFER_SIZE;
-    glLineWidth(5);
+    float horizontalSpacingAudio = ofGetWindowWidth() / (float) Keys::BUFFER_SIZE;
+    glLineWidth(mouseY);
+    float audioVisMul = (float) mouseX;
 
     for (int bufferPos=0; bufferPos<Keys::BUFFER_SIZE; bufferPos++) {
         //ofFill();
 
         //ofSetColor(255);
         float audio = instArray[3].getBuffer(bufferPos);
+        //if (ofGetFrameNum() % 60 == 0) cout << "audio is: " << audio << endl;
         //if(audio > 1 || audio < -1) cout << "audio is: " << audio << endl;
 //        if (audio > 0) ofSetColor(0);
 //        else ofSetColor(255);
@@ -254,7 +255,11 @@ void ofApp::draw(){
 
 
         ofSetColor(audioColor * 255);
-        ofLine(0, verticalSpacingAudio * bufferPos, ofGetWindowWidth()/2, verticalSpacingAudio * bufferPos);
+        //ofLine(0, verticalSpacingAudio * bufferPos, ofGetWindowWidth()/2, verticalSpacingAudio * bufferPos);
+        ofLine(horizontalSpacingAudio * bufferPos,
+                ofGetWindowHeight()/2 + (audio * audioVisMul),
+                horizontalSpacingAudio * (bufferPos+1),
+                ofGetWindowHeight()/2 + (audio * audioVisMul));
         //cout << "audio is: " << audio << endl;
 //        cout << "buff size  is: " << Keys::BUFFER_SIZE << endl;
 //        cout << "VERTICAL SPACEING: " << verticalSpacingAudio << endl;
