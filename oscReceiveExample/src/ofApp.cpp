@@ -33,6 +33,7 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
 
+    ofSetBackgroundAuto(background);
 	// hide old messages
 	for(int i = 0; i < NUM_MSG_STRINGS; i++){
 		if(timers[i] < ofGetElapsedTimef()){
