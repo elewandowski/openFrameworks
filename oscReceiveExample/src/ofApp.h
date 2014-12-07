@@ -41,5 +41,7 @@ class ofApp : public ofBaseApp {
         array<string, 100> splitOSCMessageAddress(string s);
         int stoi(string s);
 
+        bool background;
+
         float lineStart, lineEnd, lineStartTheta, lineEndTheta, lineStartBase, lineEndBase, lineSpeed, lineMult;
 };

@@ -4,11 +4,14 @@
 void ofApp::setup(){
 	// listen on the given port
 
-	//ofSetBackgroundAuto(false);
+    //cout << receiver.messages.max_size(); << endl;
+    background == false;
+	ofSetBackgroundAuto(background);
 	ofBackground(127);
 	ofEnableAlphaBlending();
-	//cout << "listening for osc messages on port " << PORT << "\n";
 	receiver.setup(PORT);
+
+    //for(int i=0; i<imageArray.size();i++) imageArray[i] =
 
 	editControlPoint = 0;
     for(int i=0; i<cp.size(); i++) cp[i] = 1.0;
@@ -285,6 +288,7 @@ void ofApp::mouseDragged(int x, int y, int button){
 void ofApp::mousePressed(int x, int y, int button){
     //for my mouse: left = 0, right = 2
     if (button == 0) editControlPoint = (editControlPoint + 1) % cp.size();
+    else if(button == 2) background = !background;
 }
 
 //--------------------------------------------------------------
