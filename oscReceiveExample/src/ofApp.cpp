@@ -122,11 +122,6 @@ void ofApp::draw(){
 //    ofSetColor(ofColor(200));
 //    ofFill();
 //    ofRect(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
-
-	string buf;
-	buf = "listening for osc messages on port " + ofToString(PORT);
-	ofDrawBitmapString(buf, 10, 20);
-
 //	for(int i = 0; i < NUM_MSG_STRINGS; i++){
 //		//ofDrawBitmapString(msg_strings[i], 10, 40 + 15 * i);
 //	}
