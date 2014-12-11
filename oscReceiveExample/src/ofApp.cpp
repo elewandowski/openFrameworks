@@ -6,6 +6,7 @@ void ofApp::setup(){
 
     //cout << receiver.messages.max_size(); << endl;
     background == false;
+    acceptIncomingOSC = true;
 	ofSetBackgroundAuto(background);
 	ofBackground(127);
 	ofEnableAlphaBlending();
@@ -63,7 +64,7 @@ void ofApp::update(){
                     }
                     else if (messageAddress[1] == "audioBuffer") {
                         //cout << "num of args is " << m.getNumArgs() << endl;
-                        for(int j=0; j<Keys::BUFFER_SIZE; j++) instArray[i].setAudioBufferIndex(j, m.getArgAsFloat(j));
+                        if(acceptIncomingOSC) for(int j=0; j<Keys::BUFFER_SIZE; j++) instArray[i].setAudioBufferIndex(j, m.getArgAsFloat(j));
                     }
                     else if (messageAddress[1] == "pedal"){
                         bool pedal = m.getArgAsInt32(0) > 0 ? true : false;
@@ -273,6 +274,7 @@ void ofApp::increaseLineLength(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+    if(key == 'o') acceptIncomingOSC = !acceptIncomingOSC;
 }
 
 //--------------------------------------------------------------
