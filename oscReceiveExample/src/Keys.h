@@ -6,7 +6,7 @@ class Keys {
     public:
 
         static const int LENGTH = 128;
-        static const int BUFFER_SIZE = 127;
+        static const int BUFFER_SIZE = 256;
         array<int, LENGTH> keys;
         array<int, LENGTH> keysWithPedal;
         array<int, LENGTH> keysWithPedalAndDecay;
