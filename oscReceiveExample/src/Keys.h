@@ -29,7 +29,7 @@ class Keys {
         int numOfPressedKeys();
         void setAudio(float audioInL, float audioInR);
         float getAudioMono();
-        float getBuffer(int i);
+        float getSampleFromBuffer(int i);
         void setAudioBufferIndex(int index, float value);
         array<float, 2> getAudioStereo();
 

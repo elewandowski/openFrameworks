@@ -5,14 +5,14 @@ void ofApp::setup(){
 	// listen on the given port
 
     //cout << receiver.messages.max_size(); << endl;
-    background == false;
+    background == true;
     acceptIncomingOSC = true;
 	ofSetBackgroundAuto(background);
 	ofBackground(127);
 	ofEnableAlphaBlending();
 	receiver.setup(PORT);
 
-    //for(int i=0; i<imageArray.size();i++) imageArray[i] =
+	for(int i=0; i<visArray.size(); i++) visArray[i] = new Core(ofVec3f(0, 0, 0), 10.0);
 
 	editControlPoint = 0;
     for(int i=0; i<cp.size(); i++) cp[i] = 1.0;
@@ -27,6 +27,11 @@ void ofApp::setup(){
     lineMult = ofGetWindowWidth() / 3;
     //lineSpeed = 0.00025;
     lineSpeed = 0.01;
+
+    r = 50;
+    theta = 0;
+    num = 25;
+
 }
 
 //--------------------------------------------------------------
@@ -119,17 +124,17 @@ void ofApp::update(){
 void ofApp::draw(){
 
 
-//    ofSetColor(ofColor(200));
-//    ofFill();
-//    ofRect(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
-//	for(int i = 0; i < NUM_MSG_STRINGS; i++){
-//		//ofDrawBitmapString(msg_strings[i], 10, 40 + 15 * i);
-//	}
+    ofSetColor(ofColor(200));
+    ofFill();
+    ofRect(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
+	for(int i = 0; i < NUM_MSG_STRINGS; i++){
+		//ofDrawBitmapString(msg_strings[i], 10, 40 + 15 * i);
+	}
 
 
     float verticalSpacing = ofGetWindowHeight() / Keys::LENGTH;
 
-
+    //for(int i=0; i<visArray.size(); i++) visArray[i]->draw();
 
     for (int pitch=0; pitch<Keys::LENGTH; pitch++) {
         for (int i=0; i<instArray.size(); i++) {
@@ -161,12 +166,12 @@ void ofApp::draw(){
                     //ofBeginShape();
                 }
 
-                    ofColor color;
-                    color.setHsb(pitch + 30, 127, 100, 50);
-                    ofSetColor(color);
-                    ofNoFill();
-                    glLineWidth(4*cp[2]);
-                    //for(int vertex=0; vertex<instArray[i].PRESSED_KEYS; vertex++) {
+                ofColor color;
+                color.setHsb(pitch + 30, 127, 100, 50);
+                ofSetColor(color);
+                ofNoFill();
+                glLineWidth(4*cp[2]);
+                //for(int vertex=0; vertex<instArray[i].PRESSED_KEYS; vertex++) {
                 if(velocity > 0) {
 //                    float mag = pitch / Keys::LENGTH;
 //                    ofVec2f v1(ofRandom(ofGetWindowWidth()), ofRandom(ofGetWindowHeight()));
@@ -179,21 +184,21 @@ void ofApp::draw(){
                     ofCircle(ofGetWindowWidth()/4*cp[2], ofGetWindowHeight()/4, pitch * 4 + velocity * cp[2]);
                 }
             }
-            else if(i == 2) {
+            else if(i == 2) { //drum circles
 
                 if(velocity > 0) {
                     ofColor color;
                     float pitch2Col = ofMap(pitch, 35, 44, 0, 360);
 
                     if(pitch == 36) { //main kick
-                        color.setHsb(0, 100, 52, 50);
+                        color.setHsb(0, 100, 52, 100);
                         ofSetColor(color);
                         ofFill();
                         glLineWidth(40);
                         ofCircle(ofGetWindowWidth()/2*cp[6], ofGetWindowHeight()/2*cp[7], 200);
                     }
                     else if (pitch == 37){ //side kick
-                        color.setHsb(pitch2Col, 127, 100, 50);
+                        color.setHsb(pitch2Col, 127, 100, 100);
                         ofSetColor(color);
                         ofFill();
                         glLineWidth(20);
@@ -201,7 +206,7 @@ void ofApp::draw(){
                         ofCircle(ofGetWindowWidth()/2*cp[5], ofGetWindowHeight()/2, pitch2Radius*cp[7]);
                     }
                     else if (pitch == 41){ //clap
-                        color.setHsb(pitch2Col*cp[0], 127, 100, 50);
+                        color.setHsb(pitch2Col*cp[0], 127, 100, 100);
                         ofSetColor(color);
                         ofFill();
                         glLineWidth(20);
@@ -209,7 +214,7 @@ void ofApp::draw(){
                         ofCircle(ofGetWindowWidth()/4*3*cp[4], ofGetWindowHeight()/2, 300);
                     }
                     else if (pitch == 44){ //hihat
-                        color.setHsb(255*cp[2], 127, 100, 50);
+                        color.setHsb(255*cp[2], 127, 100, 100);
                         ofSetColor(color);
                         ofFill();
                         glLineWidth(20);
@@ -217,7 +222,7 @@ void ofApp::draw(){
                     }
                 }
             }
-            else if(i == 3) {
+            else if(i == 3 && false) {
                 //cout << "audio is: " << audio << endl;
                 ofColor color;
                 color.setHsb(audio*100, 127, 100, 50);
@@ -230,36 +235,61 @@ void ofApp::draw(){
                 ofSetColor(0);
                 ofCircle(ofGetWindowWidth()/2, ofGetWindowHeight()/2, 250*audio*cp[4]);
             }
+            else if(i == 4) { //spinning circles
+                    ofFill();
+                    num = audio * ofGetWidth();
+
+                    float yPos = 0;
+                    for(int i=0; i<num; i++){
+                        float rSin = sin(theta);
+                        yPos = rSin * r + (theta * 0.1);
+                        if(yPos > ofGetWindowHeight()) {
+//                            cout << "the amount of circles drawn is " << i << endl;
+                           break;
+                        }
+
+                        ofSetColor(255.0/(float)num*i);
+
+                        float rCos = cos(theta);
+
+                        ofEllipse(ofGetWindowWidth()/2 + rCos * r,
+                                yPos,
+                                r, r);
+                        theta += num/TWO_PI;
+                    }
+                    theta = 0;
+
+            }
         }
     }
 
     float verticalSpacingAudio = ofGetWindowHeight() / (float) Keys::BUFFER_SIZE;
     float horizontalSpacingAudio = ofGetWindowWidth() / (float) Keys::BUFFER_SIZE;
-    glLineWidth(mouseY);
+    glLineWidth(mouseY/10);
     float audioVisMul = (float) mouseX;
 
-    for (int bufferPos=0; bufferPos<Keys::BUFFER_SIZE; bufferPos++) {
-        //ofFill();
-
-        //ofSetColor(255);
-        float audio = instArray[3].getBuffer(bufferPos);
-        //if (ofGetFrameNum() % 60 == 0) cout << "audio is: " << audio << endl;
-        //if(audio > 1 || audio < -1) cout << "audio is: " << audio << endl;
-//        if (audio > 0) ofSetColor(0);
-//        else ofSetColor(255);
-        float audioColor = (audio + 1) * 0.5;
-
-
-        ofSetColor(audioColor * 255);
-        //ofLine(0, verticalSpacingAudio * bufferPos, ofGetWindowWidth()/2, verticalSpacingAudio * bufferPos);
-        ofLine(horizontalSpacingAudio * bufferPos,
-                ofGetWindowHeight()/2 + (audio * audioVisMul),
-                horizontalSpacingAudio * (bufferPos+1),
-                ofGetWindowHeight()/2 + (audio * audioVisMul));
-        //cout << "audio is: " << audio << endl;
-//        cout << "buff size  is: " << Keys::BUFFER_SIZE << endl;
-//        cout << "VERTICAL SPACEING: " << verticalSpacingAudio << endl;
+    for (int buffIndex = numOfBuffers-1; buffIndex>=0; buffIndex--) {
+        for (int bufferPos=0; bufferPos<Keys::BUFFER_SIZE; bufferPos++) {
+            if(buffIndex == 0) audioArray[buffIndex][bufferPos] = instArray[3].getSampleFromBuffer(bufferPos);
+            else audioArray[buffIndex][bufferPos] = audioArray[buffIndex-1][bufferPos];
+        }
     }
+
+    for (int buffIndex; buffIndex<numOfBuffers; buffIndex++) {
+        for (int bufferPos=0; bufferPos<Keys::BUFFER_SIZE; bufferPos++) {
+            float audio = audioArray[buffIndex][bufferPos];
+
+            //float audio = instArray[3].getBuffer(bufferPos);
+            float audioColor = (audio + 1) * 0.5;
+            ofSetColor(audioColor * 255);
+            ofLine(horizontalSpacingAudio * bufferPos,
+                    (ofGetWindowHeight()/numOfBuffers*buffIndex) + (audio * audioVisMul),
+                    horizontalSpacingAudio * (bufferPos+1),
+                    (ofGetWindowHeight()/numOfBuffers*buffIndex) + (audio * audioVisMul));
+        }
+    }
+
+
 }
 
 void ofApp::increaseLineLength(){

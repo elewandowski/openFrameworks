@@ -97,7 +97,7 @@ void Keys::setAudioBufferIndex(int index, float value) {
     audioR[index] = value;
 }
 
-float Keys::getBuffer(int i) {
+float Keys::getSampleFromBuffer(int i) {
     //cout << "the audio out here is: " << audioL[0] << endl;
     float output = (audioL[i] + audioR[i]) * 0.5;
     //bufferReadHead = (bufferReadHead + 1) % BUFFER_SIZE;
